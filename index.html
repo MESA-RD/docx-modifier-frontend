@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modifica Documenti DOCX</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 10px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+    button {
+      padding: 10px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .info {
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Modifica il tuo documento DOCX</h1>
+  <form id="modifyForm">
+    <label for="fileInput">Seleziona il file DOCX:</label>
+    <input type="file" id="fileInput" accept=".docx" required>
+
+    <label for="instructionInput">Inserisci le istruzioni di modifica:</label>
+    <textarea id="instructionInput" placeholder="Es: Espandi il contenuto" required></textarea>
+
+    <button type="submit">Esegui modifica</button>
+  </form>
+
+  <p class="info">
+    Una volta pronti, il documento modificato verrà scaricato automaticamente. <br>
+    Nota: Il backend non è ancora configurato, pertanto in questa fase la richiesta non darà un risultato valido.
+  </p>
+
+  <script>
+    const form = document.getElementById('modifyForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('fileInput');
+      const instructionInput = document.getElementById('instructionInput');
+      
+      const formData = new FormData();
+      formData.append('document', fileInput.files[0]);
+      formData.append('instruction', instructionInput.value);
+
+      // URL del backend (quando sarà pronto, sostituisci l'URL sottostante con quello reale su Render.com)
+      const backendUrl = 'https://nome-del-tuo-servizio.onrender.com/modify';
+
+      const response = await fetch(backendUrl, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'output_modified.docx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } else {
+        alert('Errore: il backend non è ancora disponibile o la modifica non è riuscita.');
+      }
+    });
+  </script>
+</body>
+</html>
